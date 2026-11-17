@@ -1,13 +1,83 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
+}
+
+model Cliente {
+  id         Int        @id @default(autoincrement())
+  nombre     String     @db.VarChar(100)
+  apellido   String     @db.VarChar(100)
+  telefono   String?    @db.VarChar(30)
+  email      String?    @db.VarChar(100)
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  vehiculos  Vehiculo[]
+
+  @@map("clientes")
+}
+
+model Marca {
+  id         Int      @id @default(autoincrement())
+  nombre     String   @unique @db.VarChar(50)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  modelos    Modelo[]
+
+  @@map("marcas")
+}
+
+model Modelo {
+  id         Int        @id @default(autoincrement())
+  nombre     String     @db.VarChar(50)
+  marca_id   Int
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  marca      Marca      @relation(fields: [marca_id], references: [id])
+  vehiculos  Vehiculo[]
+
+  @@map("modelos")
+}
+
+model Vehiculo {
+  id         Int      @id @default(autoincrement())
+  patente    String   @unique @db.VarChar(10)
+  anio       Int?
+  modelo_id  Int
+  cliente_id Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  modelo     Modelo   @relation(fields: [modelo_id], references: [id])
+  cliente    Cliente  @relation(fields: [cliente_id], references: [id])
+  ordenes    Orden[]
+
+  @@map("vehiculos")
+}
+
+model Repuesto {
+  id         Int      @id @default(autoincrement())
+  nombre     String   @db.VarChar(100)
+  marca      String?  @db.VarChar(50)
+  precio     Decimal  @default(0) @db.Decimal(10, 2)
+  stock      Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@map("repuestos")
+}
+
+model Orden {
+  id          Int      @id @default(autoincrement())
+  descripcion String   @db.VarChar(255)
+  estado      String   @default("pendiente") @db.VarChar(20)
+  total       Decimal  @default(0) @db.Decimal(10, 2)
+  vehiculo_id Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  vehiculo    Vehiculo @relation(fields: [vehiculo_id], references: [id])
+
+  @@map("ordenes")
 }
