@@ -1,26 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateRepuestoDto } from './dto/create-repuesto.dto.js';
 import { UpdateRepuestoDto } from './dto/update-repuesto.dto.js';
 
 @Injectable()
 export class RepuestosService {
+  constructor(private readonly prisma: PrismaService) { }
+
+  // Crear repuesto
   create(createRepuestoDto: CreateRepuestoDto) {
-    return 'This action adds a new repuesto';
+    return this.prisma.repuesto.create({
+      data: createRepuestoDto,
+    });
   }
 
+  // Listar repuestos
   findAll() {
-    return `This action returns all repuestos`;
+    return this.prisma.repuesto.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} repuesto`;
+  // Buscar repuesto por ID
+  async findOne(id: number) {
+    const repuesto = await this.prisma.repuesto.findUnique({
+      where: { id },
+    });
+
+    if (!repuesto) {
+      throw new NotFoundException(`No existe un repuesto con ID ${id}.`);
+    }
+
+    return repuesto;
   }
 
-  update(id: number, updateRepuestoDto: UpdateRepuestoDto) {
-    return `This action updates a #${id} repuesto`;
+  // Actualizar repuesto
+  async update(id: number, updateRepuestoDto: UpdateRepuestoDto) {
+    await this.findOne(id);
+
+    return this.prisma.repuesto.update({
+      where: { id },
+      data: updateRepuestoDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} repuesto`;
+  // Eliminar repuesto
+  async remove(id: number) {
+    await this.findOne(id);
+
+    return this.prisma.repuesto.delete({
+      where: { id },
+    });
   }
 }
