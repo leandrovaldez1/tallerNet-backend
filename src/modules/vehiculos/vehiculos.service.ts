@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateVehiculoDto } from './dto/create-vehiculo.dto.js';
@@ -9,7 +9,9 @@ export class VehiculosService {
   constructor(private readonly prisma: PrismaService) { }
 
   // Crear vehículo
-  create(createVehiculoDto: CreateVehiculoDto) {
+  async create(createVehiculoDto: CreateVehiculoDto) {
+    await this.validatePatente(createVehiculoDto.patente);
+
     return this.prisma.vehiculo.create({
       data: createVehiculoDto,
     });
@@ -37,6 +39,10 @@ export class VehiculosService {
   async update(id: number, updateVehiculoDto: UpdateVehiculoDto) {
     await this.findOne(id);
 
+    if (updateVehiculoDto.patente) {
+      await this.validatePatente(updateVehiculoDto.patente, id);
+    }
+
     return this.prisma.vehiculo.update({
       where: { id },
       data: updateVehiculoDto,
@@ -50,5 +56,16 @@ export class VehiculosService {
     return this.prisma.vehiculo.delete({
       where: { id },
     });
+  }
+
+  private async validatePatente(patente: string, vehiculoId?: number) {
+    const existing = await this.prisma.vehiculo.findUnique({
+      where: { patente },
+      select: { id: true },
+    });
+
+    if (existing && existing.id !== vehiculoId) {
+      throw new ConflictException('Ya existe un vehículo con esa patente.');
+    }
   }
 }
