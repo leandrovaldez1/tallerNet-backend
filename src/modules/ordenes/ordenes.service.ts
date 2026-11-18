@@ -1,26 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateOrdeneDto } from './dto/create-ordene.dto.js';
 import { UpdateOrdeneDto } from './dto/update-ordene.dto.js';
 
 @Injectable()
 export class OrdenesService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  // Crear orden
   create(createOrdeneDto: CreateOrdeneDto) {
-    return 'This action adds a new ordene';
+    return this.prisma.orden.create({
+      data: createOrdeneDto,
+    });
   }
 
+  // Listar órdenes
   findAll() {
-    return `This action returns all ordenes`;
+    return this.prisma.orden.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} ordene`;
+  // Buscar orden por ID
+  async findOne(id: number) {
+    const orden = await this.prisma.orden.findUnique({
+      where: { id },
+    });
+
+    if (!orden) {
+      throw new NotFoundException(`No existe una orden con ID ${id}.`);
+    }
+
+    return orden;
   }
 
-  update(id: number, updateOrdeneDto: UpdateOrdeneDto) {
-    return `This action updates a #${id} ordene`;
+  // Actualizar orden
+  async update(id: number, updateOrdeneDto: UpdateOrdeneDto) {
+    await this.findOne(id);
+
+    return this.prisma.orden.update({
+      where: { id },
+      data: updateOrdeneDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} ordene`;
+  // Eliminar orden
+  async remove(id: number) {
+    await this.findOne(id);
+
+    return this.prisma.orden.delete({
+      where: { id },
+    });
   }
 }
