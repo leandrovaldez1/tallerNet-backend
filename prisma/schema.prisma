@@ -39,6 +39,7 @@ model Modelo {
   marca      Marca      @relation(fields: [marca_id], references: [id])
   vehiculos  Vehiculo[]
 
+  @@unique([marca_id, nombre])
   @@map("modelos")
 }
 
