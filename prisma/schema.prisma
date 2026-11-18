@@ -8,13 +8,14 @@ datasource db {
 }
 
 model Cliente {
-  id         Int        @id @default(autoincrement())
-  nombre     String     @db.VarChar(100)
-  apellido   String     @db.VarChar(100)
-  telefono   String?    @db.VarChar(30)
-  email      String?    @db.VarChar(100)
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
+  id         Int      @id @default(autoincrement())
+  nombre     String   @db.VarChar(100)
+  apellido   String   @db.VarChar(100)
+  dni        String   @unique @db.VarChar(15)
+  telefono   String?  @db.VarChar(30)
+  email      String?  @db.VarChar(100)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   vehiculos  Vehiculo[]
 
   @@map("clientes")
@@ -61,12 +62,13 @@ model Vehiculo {
 model Repuesto {
   id         Int      @id @default(autoincrement())
   nombre     String   @db.VarChar(100)
-  marca      String?  @db.VarChar(50)
+  marca      String   @db.VarChar(50)
   precio     Decimal  @default(0) @db.Decimal(10, 2)
   stock      Int      @default(0)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  @@unique([nombre, marca])
   @@map("repuestos")
 }
 
