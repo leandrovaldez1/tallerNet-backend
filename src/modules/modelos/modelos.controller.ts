@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
+
 import { ModelosService } from './modelos.service.js';
 import { CreateModeloDto } from './dto/create-modelo.dto.js';
 import { UpdateModeloDto } from './dto/update-modelo.dto.js';
@@ -18,17 +28,20 @@ export class ModelosController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.modelosService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.modelosService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateModeloDto: UpdateModeloDto) {
-    return this.modelosService.update(+id, updateModeloDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateModeloDto: UpdateModeloDto,
+  ) {
+    return this.modelosService.update(id, updateModeloDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.modelosService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.modelosService.remove(id);
   }
 }
