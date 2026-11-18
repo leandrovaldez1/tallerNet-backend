@@ -1,26 +1,54 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateModeloDto } from './dto/create-modelo.dto.js';
 import { UpdateModeloDto } from './dto/update-modelo.dto.js';
 
 @Injectable()
 export class ModelosService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  // Crear modelo
   create(createModeloDto: CreateModeloDto) {
-    return 'This action adds a new modelo';
+    return this.prisma.modelo.create({
+      data: createModeloDto,
+    });
   }
 
+  // Listar modelos
   findAll() {
-    return `This action returns all modelos`;
+    return this.prisma.modelo.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} modelo`;
+  // Buscar modelo por ID
+  async findOne(id: number) {
+    const modelo = await this.prisma.modelo.findUnique({
+      where: { id },
+    });
+
+    if (!modelo) {
+      throw new NotFoundException(`No existe un modelo con ID ${id}.`);
+    }
+
+    return modelo;
   }
 
-  update(id: number, updateModeloDto: UpdateModeloDto) {
-    return `This action updates a #${id} modelo`;
+  // Actualizar modelo
+  async update(id: number, updateModeloDto: UpdateModeloDto) {
+    await this.findOne(id);
+
+    return this.prisma.modelo.update({
+      where: { id },
+      data: updateModeloDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} modelo`;
+  // Eliminar modelo
+  async remove(id: number) {
+    await this.findOne(id);
+
+    return this.prisma.modelo.delete({
+      where: { id },
+    });
   }
 }
