@@ -8,12 +8,15 @@ import { ClientesModule } from '../clientes/clientes.module.js';
 import { VehiculosModule } from '../vehiculos/vehiculos.module.js';
 import { OrdenesModule } from '../ordenes/ordenes.module.js';
 import { RepuestosModule } from '../repuestos/repuestos.module.js';
+import { PrismaModule } from '../prisma/prisma.module.js';
+import { MarcasModule } from '../marcas/marcas.module.js';
+import { ModelosModule } from '../modelos/modelos.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
 @Module({
   imports: [
-    UsersModule, AuthModule, ClientesModule, VehiculosModule ,OrdenesModule,RepuestosModule
+    UsersModule, AuthModule, ClientesModule, VehiculosModule ,OrdenesModule,RepuestosModule,PrismaModule,MarcasModule,ModelosModule
   ],
   controllers: [AppController],
   providers: [AppService],
