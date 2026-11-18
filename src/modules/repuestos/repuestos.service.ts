@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateRepuestoDto } from './dto/create-repuesto.dto.js';
@@ -9,7 +9,9 @@ export class RepuestosService {
   constructor(private readonly prisma: PrismaService) { }
 
   // Crear repuesto
-  create(createRepuestoDto: CreateRepuestoDto) {
+  async create(createRepuestoDto: CreateRepuestoDto) {
+    await this.validateNombreMarca(createRepuestoDto.nombre, createRepuestoDto.marca);
+
     return this.prisma.repuesto.create({
       data: createRepuestoDto,
     });
@@ -35,7 +37,11 @@ export class RepuestosService {
 
   // Actualizar repuesto
   async update(id: number, updateRepuestoDto: UpdateRepuestoDto) {
-    await this.findOne(id);
+    const repuesto = await this.findOne(id);
+
+    const nombre = updateRepuestoDto.nombre ?? repuesto.nombre;
+    const marca = updateRepuestoDto.marca ?? repuesto.marca;
+    await this.validateNombreMarca(nombre, marca, id);
 
     return this.prisma.repuesto.update({
       where: { id },
@@ -50,5 +56,16 @@ export class RepuestosService {
     return this.prisma.repuesto.delete({
       where: { id },
     });
+  }
+
+  private async validateNombreMarca(nombre: string, marca: string, repuestoId?: number) {
+    const existing = await this.prisma.repuesto.findUnique({
+      where: { nombre_marca: { nombre, marca } },
+      select: { id: true },
+    });
+
+    if (existing && existing.id !== repuestoId) {
+      throw new ConflictException('Ya existe un repuesto con ese nombre y marca.');
+    }
   }
 }

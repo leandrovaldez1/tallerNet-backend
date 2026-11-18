@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { CreateMarcaDto } from './dto/create-marca.dto.js';
@@ -6,10 +6,12 @@ import { UpdateMarcaDto } from './dto/update-marca.dto.js';
 
 @Injectable()
 export class MarcasService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   // Crear marca
-  create(createMarcaDto: CreateMarcaDto) {
+  async create(createMarcaDto: CreateMarcaDto) {
+    await this.validateNombre(createMarcaDto.nombre);
+
     return this.prisma.marca.create({
       data: createMarcaDto,
     });
@@ -37,6 +39,10 @@ export class MarcasService {
   async update(id: number, updateMarcaDto: UpdateMarcaDto) {
     await this.findOne(id);
 
+    if (updateMarcaDto.nombre) {
+      await this.validateNombre(updateMarcaDto.nombre, id);
+    }
+
     return this.prisma.marca.update({
       where: { id },
       data: updateMarcaDto,
@@ -50,5 +56,16 @@ export class MarcasService {
     return this.prisma.marca.delete({
       where: { id },
     });
+  }
+
+  private async validateNombre(nombre: string, marcaId?: number) {
+    const existing = await this.prisma.marca.findUnique({
+      where: { nombre },
+      select: { id: true },
+    });
+
+    if (existing && existing.id !== marcaId) {
+      throw new ConflictException('Ya existe una marca con ese nombre.');
+    }
   }
 }
