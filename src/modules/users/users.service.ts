@@ -1,26 +1,72 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto.js';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+
+import { PrismaService } from '../prisma/prisma.service.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  constructor(private readonly prisma: PrismaService) {}
 
+  // Listar usuarios
   findAll() {
-    return `This action returns all users`;
+    return this.prisma.user.findMany({
+      omit: { passwordHash: true },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  // Buscar usuario por ID
+  async findOne(id: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+      omit: { passwordHash: true },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`No existe un usuario con ID ${id}.`);
+    }
+
+    return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  // Actualizar usuario
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await this.findOne(id);
+
+    if (updateUserDto.email) {
+      await this.validateEmail(updateUserDto.email, id);
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+      omit: { passwordHash: true },
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  // Eliminar usuario
+  async remove(id: number) {
+    await this.findOne(id);
+
+    return this.prisma.user.delete({
+      where: { id },
+      omit: { passwordHash: true },
+    });
+  }
+
+  // Validar correo duplicado
+  private async validateEmail(email: string, userId?: number) {
+    const existing = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existing && existing.id !== userId) {
+      throw new ConflictException(
+        'Ya existe una cuenta con ese correo electrónico.',
+      );
+    }
   }
 }
