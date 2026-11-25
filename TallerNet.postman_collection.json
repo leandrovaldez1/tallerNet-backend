@@ -1,0 +1,426 @@
+{
+  "info": {
+    "name": "TallerNet API",
+    "_postman_id": "tallernet-collection-v1",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:4000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Registrar usuario",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"email\": \"juan@example.com\",\n  \"password\": \"contraseña123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Registrar usuario — correo duplicado (409)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Pérez\",\n  \"email\": \"juan@example.com\",\n  \"password\": \"contraseña123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Iniciar sesión — credenciales correctas (200 + JWT)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"contraseña123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Iniciar sesión — contraseña incorrecta (401)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juan@example.com\",\n  \"password\": \"contraseñaincorrecta\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Listar usuarios",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/users", "host": ["{{base_url}}"], "path": ["users"] }
+          }
+        },
+        {
+          "name": "Buscar usuario por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/users/1", "host": ["{{base_url}}"], "path": ["users", "1"] }
+          }
+        },
+        {
+          "name": "Buscar usuario — no existe (404)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/users/9999", "host": ["{{base_url}}"], "path": ["users", "9999"] }
+          }
+        },
+        {
+          "name": "Actualizar usuario",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/users/1", "host": ["{{base_url}}"], "path": ["users", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Juan Carlos Pérez\",\n  \"email\": \"juancarlos@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Actualizar usuario — correo duplicado (409)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/users/2", "host": ["{{base_url}}"], "path": ["users", "2"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"juancarlos@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar usuario",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/users/1", "host": ["{{base_url}}"], "path": ["users", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "Crear cliente",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/clientes", "host": ["{{base_url}}"], "path": ["clientes"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"María\",\n  \"apellido\": \"González\",\n  \"dni\": \"32456789\",\n  \"telefono\": \"3814567890\",\n  \"email\": \"maria@example.com\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar clientes",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/clientes", "host": ["{{base_url}}"], "path": ["clientes"] }
+          }
+        },
+        {
+          "name": "Buscar cliente por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/clientes/1", "host": ["{{base_url}}"], "path": ["clientes", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar cliente",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/clientes/1", "host": ["{{base_url}}"], "path": ["clientes", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"telefono\": \"3814999888\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar cliente",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/clientes/1", "host": ["{{base_url}}"], "path": ["clientes", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Marcas",
+      "item": [
+        {
+          "name": "Crear marca",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/marcas", "host": ["{{base_url}}"], "path": ["marcas"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Toyota\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar marcas",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/marcas", "host": ["{{base_url}}"], "path": ["marcas"] }
+          }
+        },
+        {
+          "name": "Buscar marca por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/marcas/1", "host": ["{{base_url}}"], "path": ["marcas", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar marca",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/marcas/1", "host": ["{{base_url}}"], "path": ["marcas", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Toyota Argentina\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar marca",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/marcas/1", "host": ["{{base_url}}"], "path": ["marcas", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Modelos",
+      "item": [
+        {
+          "name": "Crear modelo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/modelos", "host": ["{{base_url}}"], "path": ["modelos"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Corolla\",\n  \"marca_id\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar modelos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/modelos", "host": ["{{base_url}}"], "path": ["modelos"] }
+          }
+        },
+        {
+          "name": "Buscar modelo por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/modelos/1", "host": ["{{base_url}}"], "path": ["modelos", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar modelo",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/modelos/1", "host": ["{{base_url}}"], "path": ["modelos", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Corolla Cross\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar modelo",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/modelos/1", "host": ["{{base_url}}"], "path": ["modelos", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehículos",
+      "item": [
+        {
+          "name": "Crear vehículo",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/vehiculos", "host": ["{{base_url}}"], "path": ["vehiculos"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"patente\": \"AB123CD\",\n  \"anio\": 2020,\n  \"modelo_id\": 1,\n  \"cliente_id\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar vehículos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/vehiculos", "host": ["{{base_url}}"], "path": ["vehiculos"] }
+          }
+        },
+        {
+          "name": "Buscar vehículo por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/vehiculos/1", "host": ["{{base_url}}"], "path": ["vehiculos", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar vehículo",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/vehiculos/1", "host": ["{{base_url}}"], "path": ["vehiculos", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"anio\": 2021\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar vehículo",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/vehiculos/1", "host": ["{{base_url}}"], "path": ["vehiculos", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Repuestos",
+      "item": [
+        {
+          "name": "Crear repuesto",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/repuestos", "host": ["{{base_url}}"], "path": ["repuestos"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Filtro de aceite\",\n  \"marca\": \"Bosch\",\n  \"precio\": 1500.00,\n  \"stock\": 10\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar repuestos",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/repuestos", "host": ["{{base_url}}"], "path": ["repuestos"] }
+          }
+        },
+        {
+          "name": "Buscar repuesto por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/repuestos/1", "host": ["{{base_url}}"], "path": ["repuestos", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar repuesto",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/repuestos/1", "host": ["{{base_url}}"], "path": ["repuestos", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"precio\": 1800.00,\n  \"stock\": 15\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar repuesto",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/repuestos/1", "host": ["{{base_url}}"], "path": ["repuestos", "1"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Órdenes",
+      "item": [
+        {
+          "name": "Crear orden",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/ordenes", "host": ["{{base_url}}"], "path": ["ordenes"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehiculo_id\": 1,\n  \"descripcion\": \"Cambio de aceite y filtros\",\n  \"estado\": \"pendiente\",\n  \"total\": 3500.00\n}"
+            }
+          }
+        },
+        {
+          "name": "Listar órdenes",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/ordenes", "host": ["{{base_url}}"], "path": ["ordenes"] }
+          }
+        },
+        {
+          "name": "Buscar orden por ID",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{base_url}}/ordenes/1", "host": ["{{base_url}}"], "path": ["ordenes", "1"] }
+          }
+        },
+        {
+          "name": "Actualizar orden",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{base_url}}/ordenes/1", "host": ["{{base_url}}"], "path": ["ordenes", "1"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"estado\": \"en_reparacion\",\n  \"total\": 5000.00\n}"
+            }
+          }
+        },
+        {
+          "name": "Eliminar orden",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{base_url}}/ordenes/1", "host": ["{{base_url}}"], "path": ["ordenes", "1"] }
+          }
+        }
+      ]
+    }
+  ]
+}
