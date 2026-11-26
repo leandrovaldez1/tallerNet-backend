@@ -37,7 +37,7 @@ model Modelo {
   marca_id   Int
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
-  marca      Marca      @relation(fields: [marca_id], references: [id])
+  marca      Marca      @relation(fields: [marca_id], references: [id], onDelete: Cascade)
   vehiculos  Vehiculo[]
 
   @@unique([marca_id, nombre])
@@ -52,8 +52,8 @@ model Vehiculo {
   cliente_id Int
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
-  modelo     Modelo   @relation(fields: [modelo_id], references: [id])
-  cliente    Cliente  @relation(fields: [cliente_id], references: [id])
+  modelo     Modelo   @relation(fields: [modelo_id], references: [id], onDelete: Cascade)
+  cliente    Cliente  @relation(fields: [cliente_id], references: [id], onDelete: Cascade)
   ordenes    Orden[]
 
   @@map("vehiculos")
@@ -80,7 +80,7 @@ model Orden {
   vehiculo_id Int
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
-  vehiculo    Vehiculo @relation(fields: [vehiculo_id], references: [id])
+  vehiculo    Vehiculo @relation(fields: [vehiculo_id], references: [id], onDelete: Cascade)
 
   @@map("ordenes")
 }
